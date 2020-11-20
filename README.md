@@ -1,5 +1,5 @@
 # (Flask + Docker + WSGI) honeypot
-A basic flask based Outlook Web Honey pot
+A honeypot based on https://github.com/joda32/owa-honeypot
 
 ![](docs/OWA_honeypot_1.png)
 
