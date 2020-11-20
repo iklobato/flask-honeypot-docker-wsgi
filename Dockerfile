@@ -7,7 +7,7 @@ COPY . /tmp
 RUN ls -lah /tmp
 RUN pip install -r "/tmp/requirements.txt"
 
-EXPOSE 80
+EXPOSE 8080
 
 ENV FLASK_APP = /tmp/app.py
 ENV SERVER_NAME = '0.0.0.0'
