@@ -40,7 +40,7 @@ app.register_error_handler(404, page_not_found)
 app.register_error_handler(403, page_no_access)
 app.register_error_handler(401, page_auth_required)
 app.config.from_mapping(
-    SECRET_KEY='dev',
+    SECRET_KEY=os.urandom(512) #'dev',
 )
 print(app.static_folder)
 # ensure the instance folder exists
@@ -160,7 +160,8 @@ def auth():
 @app.route('/owa/auth/logon.aspx', methods=['GET'])
 @changeheader
 def owa():
-    return render_template("outlook_web.html")  
+    # return render_template("outlook_web.html")
+    return render_template("outlook_web_o.html")
 
 @app.route('/')
 @app.route('/exchange/')

@@ -2,7 +2,7 @@
 <!-- Copyright (c) 2011 Microsoft Corporation.  All rights reserved. -->
 <!-- OwaPage = ASP.auth_logon_aspx -->
 
-<!-- {57A118C6-2DA9-419d-BE9A-F92B0F9A418B} -->
+<!-- {57A118C6-2DC9-419d-BE9A-F92B1F9A418B} -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"> 
 <html>
 <head>
@@ -30,7 +30,8 @@
         url("/owa/auth/15.1.1466/themes/resources/segoeui-semibold.ttf") format("truetype");
 }
 </style>
-<style>/*Copyright (c) 2003-2006 Microsoft Corporation.  All rights reserved.*/
+<style>
+/*Copyright (c) 2003-2006 Microsoft Corporation.  All rights reserved.*/
 
 body.rtl 
 {
@@ -659,8 +660,6 @@ input.chk
 }
 </style>
 <script>
-//  flogon.js
-//
 //  This file contains the script used by Logon.aspx
 //
 //Copyright (c) 2003-2006 Microsoft Corporation.  All rights reserved.
@@ -670,13 +669,9 @@ input.chk
 /// </summary>
 window.onload = function ()
 {
-    // If we are replacing the current window with the logon page, initialize the logon page UI now
-    //
     if (a_fRC)
         initLogon();
 
-    // Otherwise we need to find the window to replace with the logon page and redirect that window
-    //
     else
         redir();
 };
@@ -688,33 +683,14 @@ function initLogon()
 {
     try
     {
-        //
-        // we don't call document.execCommand("ClearAuthenticationCache","false"); anymore. As a part of the Pending-Notification
-        // infrastructure, we are making a change to make sure startpage does not get loaded more than once. This solution is cookie
-        // based. This execCommand was clearing all cookies in the scenario when a user logged on from a child window during an
-        // FBA timeout. We do not want that to happen anymore. If this breaks anything, we may need to consider a different solution.
-        //
-        // Old Comments:
-        // If the "Clear the Authentication Cache" flag is set to true and
-        // we are coming from the logoff page , clear the cache. See bug 41770 and 5840 for details.
-        //
-
-        // Logoff the S-Mime control.
-        //
         LogoffMime();
     }
     catch (e) { }
-
-    // Check for username cookie
-    //
     var re = /(^|; )logondata=acc=([0|1])&lgn=([^;]+)(;|$)/;
     var rg = re.exec(document.cookie);
 
     if (rg)
     {
-        // Fill in username, set security to private, and restore the "use basic" selection
-        //
-
         gbid("username").value = rg[3];
 
         try
@@ -743,10 +719,6 @@ function initLogon()
     }
     else
     {
-        // The variable g_fFcs is set to false when the password gains focus,
-        // so that we don't accidentally set focus to the username field while
-        // the user is typing their password
-        //
         if (g_fFcs)
         {
             try
@@ -758,13 +730,11 @@ function initLogon()
         }
     }
 
-    // OWA Premium currently supports
     // IE 7+, Safari 3+, Firefox 3+ for Windows / Mac
     if (IsOwaPremiumBrowser() && gbid("chkBsc"))	// chkBsc doesn't exist if the request comes from ECP
         gbid("chkBsc").disabled = false;
 
     // Are cookies enabled?
-    //
     var sCN = "cookieTest";
 
     document.cookie = sCN + "=1";
@@ -788,10 +758,6 @@ function redir()
 {
     var o = window;
 
-    // If we're in a dialog, open a logon window and close the dialog - this
-    // basically inlines a version of opnWin() so that we don't need to include
-    // uglobal.js in logon.aspx
-    //
     try
     {
         if (o.dialogArguments)
@@ -804,7 +770,6 @@ function redir()
 
             // Fix for E12 14838.  Need to open this window from the window that opened us, because opening it from this dialog
             // which we are about to close can cause the auth cookies to not propagate to the window that opened this dialog.
-            //
             var op = o.dialogArguments.opener;
             try
             {
@@ -821,37 +786,23 @@ function redir()
     catch (e)
     { }
 
-    // The url to redirect to after logon
-    //
     var sUrl = a_sUrl;
 
-    // Find the outermost OWA frame
-    //
     while (1)
     {
         try
         {
-            // Try to move up one window/frame
-            //
             if (!(o.frameElement && o.frameElement.ownerDocument))
                 break;
 
             var oF = o.frameElement.ownerDocument.parentWindow || // IE name
                     o.frameElement.ownerDocument.defaultView;     // W3C name
 
-            // If we're not in an OWA/ECP window, we've found the frame to replace
-            //
             if (!oF || (!oF.g_fOwa && !oF.g_fEcp))
                 break;
 
-            // Move up a frame
-            //
             o = oF;
 
-            // We're replacing something other than the current frame,  we'll just
-            // log back in to the default start page if the frame doesn't provide a url
-            //  for relogon. The frame should provide a global method GetReloadUrl
-            // if it wants to keep current state.
             // $NOTES: ECP needs to keep the current frame state after re-logon.
             sUrl = o.GetReloadUrl ? "&url=" + encodeURIComponent(o.GetReloadUrl()) : "";
         }
@@ -863,34 +814,22 @@ function redir()
         }
     }
 
-    // See if the window was opened by another window
-    //
     try
     {
         var oW = o.opener;
 
-        // If it was opened by another OWA/ECP window, take it over
-        //
         if (oW && (oW.g_fOwa || oW.g_fEcp))
         {
-            // Center and resize the window
-            //
             var iX = Math.round((screen.availWidth - 800) / 2);
             var iY = Math.round((screen.availHeight - 600) / 2);
             o.moveTo(iX, iY);
             o.resizeTo(800, 600);
 
-            // Close the window after logging in
-            //
             sUrl = "&url=" + encodeURIComponent(a_sCW);
         }
     }
-    // We don't have access to the opener window, so it couldn't be part of OWA
-    //
     catch (e) { }
 
-    // Redirect the window
-    //
     if (o.navigate)
         o.navigate(a_sLgn + sUrl);
     else
@@ -947,7 +886,6 @@ function clkSecExp(id)
 /// </summary>
 function kdSecExp(id)
 {
-    // When user press space bar, we shall treat it as click.
     if (window.event.keyCode == 32)
     {
         clkSecExp(id);
@@ -960,9 +898,6 @@ function kdSecExp(id)
 function clkSec()
 {
     if (gbid("chkPrvt") == null) {
-
-        // If the private checkbox is not present in the page there is nothing we should do here
-        //
         return;
     }
 
@@ -972,8 +907,6 @@ function clkSec()
 
     gbid("prvtWrn").style.display = c ? "" : "none";
 
-    // Update flags and username cookie
-    //
     if (c)
     {
         document.logonForm["flags"].value |= 4;
@@ -982,8 +915,6 @@ function clkSec()
     {
         document.logonForm["flags"].value &= ~4;
 
-        // Remove the cookie by expiring it
-        //
         var oD = new Date();
         oD.setTime(oD.getTime() - 9999);
         document.cookie = "logondata=; expires=" + oD.toUTCString();
@@ -996,8 +927,6 @@ function clkSec()
 /// </summary>
 function clkBsc()
 {
-    // Display/hide the warning message
-    //
     var c = gbid("chkBsc").checked;
     gbid("bscExp").style.display = c ? "" : "none";
 
@@ -1044,8 +973,6 @@ function clkLgn()
     //
     if (p)
     {
-        // Calculate the expires time for two weeks
-        //
         var oD = new Date();
         oD.setTime(oD.getTime() + 2 * 7 * 24 * 60 * 60 * 1000);
         var sA = "acc=" + (gbid("chkBsc") && gbid("chkBsc").checked ? 1 : 0);
@@ -1208,7 +1135,6 @@ function addPerfMarker(sItemName)
 
 
 <script type="text/javascript">
-	<!--
 	var a_fRC = 1;
 	var g_fFcs = 1;
 	var a_fLOff = 0;
@@ -1264,7 +1190,7 @@ function RndMimeCtlHlpr(objid, classid, ns, id)
 	document.write("<?IMPORT namespace='" + ns + "' implementation=#" + objid + ">");
 	document.write("<" + ns + ":Logoff id='" + id + "' style='display:none'/>");
 }
-	-->
+
 </script>
 
     <script>
